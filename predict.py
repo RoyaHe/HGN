@@ -50,7 +50,7 @@ dev_dataloader = helper.dev_loader
 
 
 ##########################################################################
-# Add type I que_sent nodes into train_dataloader, dev_dataloader
+# Add type I que_sent nodes into dev_dataloader
 ##########################################################################
 ## There 105 nodes in the graph
 ## - 1 question node
