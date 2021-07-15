@@ -51,6 +51,37 @@ dev_example_dict = helper.dev_example_dict
 dev_feature_dict = helper.dev_feature_dict
 dev_dataloader = helper.dev_loader
 
+##########################################################################
+# Add type I que_sent nodes into train_dataloader, dev_dataloader
+##########################################################################
+## There 105 nodes in the graph
+## - 1 question node
+## - 4 paragraph nodes
+## - 40 sentence nodes [10 for each paragraph]
+## - 60 entity nodes
+
+# edge_types = ['ques_para', 'ques_ent', 'para_para', 'para_sent', 'sent_para', 'sent_sent', 'sent_ent']
+# add 'ques_sent' edge, where sentences are such that containing the entity nodes connected with the question node
+for id in train_dataloader.graph_dict:
+
+  adj_id = train_dataloader.graph_dict[id]['adj']
+  indx_entities = np.arange(105)[adj_id[0,:] == 2]
+
+  for indx_ent in indx_entities:
+    train_dataloader.graph_dict[id]['adj'][0,:][np.arange(105)[adj_id[:,indx_ent]==7]] = 9
+    train_dataloader.graph_dict[id]['adj'][:,0][np.arange(105)[adj_id[:,indx_ent]==7]] = 9
+
+ 
+for id in dev_dataloader.graph_dict:
+
+  adj_id = dev_dataloader.graph_dict[id]['adj']
+  indx_entities = np.arange(105)[adj_id[0,:] == 2]
+
+  for indx_ent in indx_entities:
+    dev_dataloader.graph_dict[id]['adj'][0,:][np.arange(105)[adj_id[:,indx_ent]==7]] = 9
+    dev_dataloader.graph_dict[id]['adj'][:,0][np.arange(105)[adj_id[:,indx_ent]==7]] = 9
+
+
 #########################################################################
 # Initialize Model
 ##########################################################################
