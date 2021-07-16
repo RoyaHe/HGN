@@ -50,7 +50,7 @@ dev_dataloader = helper.dev_loader
 
 
 ##########################################################################
-# Add type I que_sent nodes into dev_dataloader
+# Add type II que_sent nodes into dev_dataloader
 ##########################################################################
 ## There 105 nodes in the graph
 ## - 1 question node
@@ -61,11 +61,8 @@ dev_dataloader = helper.dev_loader
 for id in dev_dataloader.graph_dict:
 
   adj_id = dev_dataloader.graph_dict[id]['adj']
-  indx_entities = np.arange(105)[adj_id[0,:] == 2]
-
-  for indx_ent in indx_entities:
-    dev_dataloader.graph_dict[id]['adj'][0,:][np.arange(105)[adj_id[:,indx_ent]==7]] = 9
-    dev_dataloader.graph_dict[id]['adj'][:,0][np.arange(105)[adj_id[:,indx_ent]==7]] = 9
+  dev_dataloader.graph_dict[id]['adj'][0,:][5:] = 9
+  dev_dataloader.graph_dict[id]['adj'][:,0][5:45] = 9
 
 #########################################################################
 # Initialize Model
