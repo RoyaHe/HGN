@@ -1,3 +1,35 @@
+Skip to content
+Search or jump to…
+
+Pull requests
+Issues
+Marketplace
+Explore
+ 
+@RoyaHe 
+RoyaHe
+/
+HGN
+forked from yuwfan/HGN
+0
+011
+Code
+Pull requests
+Actions
+Projects
+Wiki
+Security
+Insights
+Settings
+HGN/csr_mhqa/utils.py /
+@RoyaHe
+RoyaHe Update utils.py
+Latest commit ed9f6e5 now
+ History
+ 2 contributors
+@RoyaHe@yuwfan
+347 lines (279 sloc)  13.3 KB
+  
 import pickle
 import torch
 import json
@@ -86,8 +118,8 @@ def compute_loss(args, batch, start, end, para, sent, ent, q_type):
     return loss, loss_span, loss_type, loss_sup, loss_ent, loss_para
 
 
-def eval_model(args, encoder, model, dataloader, example_dict, feature_dict, prediction_file, eval_file, dev_gold_file):
-    encoder.eval()
+def eval_model(args, encoder, encoder_base, model, dataloader, example_dict, feature_dict, prediction_file, eval_file, dev_gold_file):
+    encoder_base.eval()
     model.eval()
 
     answer_dict = {}
@@ -345,3 +377,16 @@ def count_parameters(model, trainable_only=True, is_dict=False):
         return sum(p.numel() for p in model.parameters() if p.requires_grad)
     else:
         return sum(p.numel() for p in model.parameters())
+© 2021 GitHub, Inc.
+Terms
+Privacy
+Security
+Status
+Docs
+Contact GitHub
+Pricing
+API
+Training
+Blog
+About
+{"mode":"full","isActive":false}
