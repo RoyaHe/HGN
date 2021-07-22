@@ -86,8 +86,8 @@ def compute_loss(args, batch, start, end, para, sent, ent, q_type):
     return loss, loss_span, loss_type, loss_sup, loss_ent, loss_para
 
 
-def eval_model(args, encoder, model, dataloader, example_dict, feature_dict, prediction_file, eval_file, dev_gold_file):
-    encoder.eval()
+def eval_model(args, encoder, encoder_base, model, dataloader, example_dict, feature_dict, prediction_file, eval_file, dev_gold_file):
+    encoder_base.eval()
     model.eval()
 
     answer_dict = {}
