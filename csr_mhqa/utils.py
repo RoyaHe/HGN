@@ -105,9 +105,9 @@ def eval_model(args, encoder, encoder_base, model, dataloader, example_dict, fea
             inputs = {'input_ids':      batch['context_idxs'],
                       'attention_mask': batch['context_mask'],
                       'token_type_ids': batch['segment_idxs'] if args.model_type in ['bert', 'xlnet'] else None}  # XLM don't use segment_ids
-            outputs = encoder(**inputs)
+            outputs = encoder_base(**inputs)
 
-            batch['context_encoding'] = outputs[0]
+            batch['context_encoding'] = encoder(outputs[0])
             batch['context_mask'] = batch['context_mask'].float().to(args.device)
             start, end, q_type, paras, sent, ent, yp1, yp2 = model(batch, return_yp=True)
 
