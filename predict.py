@@ -61,7 +61,7 @@ dev_dataloader = helper.dev_loader
 for id in dev_dataloader.graph_dict:
 
   adj_id = dev_dataloader.graph_dict[id]['adj']
-  dev_dataloader.graph_dict[id]['adj'][0,:][5:] = 9
+  dev_dataloader.graph_dict[id]['adj'][0,:][5:45] = 9
   dev_dataloader.graph_dict[id]['adj'][:,0][5:45] = 9
 
 #########################################################################
