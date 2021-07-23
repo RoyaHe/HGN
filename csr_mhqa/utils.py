@@ -86,8 +86,8 @@ def compute_loss(args, batch, start, end, para, sent, ent, q_type):
     return loss, loss_span, loss_type, loss_sup, loss_ent, loss_para
 
 
-def eval_model(args, encoder, model, dataloader, example_dict, feature_dict, prediction_file, eval_file, dev_gold_file):
-    encoder.eval()
+def eval_model(args, encoder, encoder_base, model, dataloader, example_dict, feature_dict, prediction_file, eval_file, dev_gold_file):
+    encoder_base.eval()
     model.eval()
 
     answer_dict = {}
@@ -105,9 +105,9 @@ def eval_model(args, encoder, model, dataloader, example_dict, feature_dict, pre
             inputs = {'input_ids':      batch['context_idxs'],
                       'attention_mask': batch['context_mask'],
                       'token_type_ids': batch['segment_idxs'] if args.model_type in ['bert', 'xlnet'] else None}  # XLM don't use segment_ids
-            outputs = encoder(**inputs)
+            outputs = encoder_base(**inputs)
 
-            batch['context_encoding'] = outputs[0]
+            batch['context_encoding'] = encoder(outputs[0])
             batch['context_mask'] = batch['context_mask'].float().to(args.device)
             start, end, q_type, paras, sent, ent, yp1, yp2 = model(batch, return_yp=True)
 
