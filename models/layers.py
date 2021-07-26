@@ -118,9 +118,10 @@ class GATSelfAttention(nn.Module):
     def forward(self, input_state, adj, node_mask=None, query_vec=None):
         zero_vec = torch.zeros_like(adj)
         scores = torch.zeros_like(adj)
+        h_i = input_state
 
         for i in range(self.n_type):
-            h = torch.matmul(input_state, self.W_type[i])
+            h = torch.matmul(h_i, self.W_type[i])
             h = F.dropout(h, self.dropout, self.training)
             N, E, d = h.shape
 
@@ -137,17 +138,18 @@ class GATSelfAttention(nn.Module):
 
             scores += torch.where(adj == i+1, score, zero_vec.to(score.dtype))
 
-        zero_vec = -1e30 * torch.ones_like(scores)
-        scores = torch.where(adj > 0, scores, zero_vec.to(scores.dtype))
+            zero_vec = -1e30 * torch.ones_like(scores)
+            scores = torch.where(adj > 0, scores, zero_vec.to(scores.dtype))
 
-        # Ahead Alloc
-        if node_mask is not None:
-            h = h * node_mask
-
-        coefs = F.softmax(scores, dim=2)  # N * E * E
-        h = coefs.unsqueeze(3) * h.unsqueeze(2)  # N * E * E * d
-        h = torch.sum(h, dim=1)
-        return h
+            # Ahead Alloc
+            if node_mask is not None:
+              h = h * node_mask
+            
+            coefs = F.softmax(scores, dim=2)  # N * E * E
+            h = coefs.unsqueeze(3) * h.unsqueeze(2)  # N * E * E * d
+            h_i = torch.sum(h, dim=1)
+        
+        return h_i
 
 
 class AttentionLayer(nn.Module):
