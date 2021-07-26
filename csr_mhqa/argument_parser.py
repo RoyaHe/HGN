@@ -115,6 +115,7 @@ def default_train_parser():
                         type=int,
                         help="Batch size per GPU/CPU for training.")
     parser.add_argument("--eval_batch_size", default=16, type=int)
+    parser.add_argument("--levels",default=False,type=boolean)
 
     # eval
     parser.add_argument("--encoder_ckpt", default=None, type=str)
