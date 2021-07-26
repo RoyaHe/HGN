@@ -1,6 +1,6 @@
 {
-    "output_dir": "/ssd/HGN/data/outputs/GraphReasoningUpdate",
-    "exp_name": "roberta",
+    "output_dir": "/ssd/HGN/data/outputs",
+    "exp_name": "GraphReasoningUpdate",
     "model_type": "roberta",
     "encoder_name_or_path": "roberta-large",
     "fp16": "True",
