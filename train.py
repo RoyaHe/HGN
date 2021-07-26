@@ -247,7 +247,7 @@ for epoch in train_iterator:
     if args.local_rank == -1 or torch.distributed.get_rank() == 0:
         output_pred_file = os.path.join(args.exp_name, f'pred.epoch_{epoch+1}.json')
         output_eval_file = os.path.join(args.exp_name, f'eval.epoch_{epoch+1}.txt')
-        metrics, threshold = eval_model(args, encoder, model,
+        metrics, threshold = eval_model(args, encoder,encoder_base, model,
                                         dev_dataloader, dev_example_dict, dev_feature_dict,
                                         output_pred_file, output_eval_file, args.dev_gold_file)
 
