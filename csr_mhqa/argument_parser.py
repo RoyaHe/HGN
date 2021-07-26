@@ -115,7 +115,7 @@ def default_train_parser():
                         type=int,
                         help="Batch size per GPU/CPU for training.")
     parser.add_argument("--eval_batch_size", default=16, type=int)
-    parser.add_argument("--levels",default=False,type=boolean)
+    parser.add_argument("--levels",default='false',type=boolean_string,help="If True, the model will be truly hierarchical.")
 
     # eval
     parser.add_argument("--encoder_ckpt", default=None, type=str)
