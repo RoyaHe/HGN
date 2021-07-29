@@ -115,8 +115,7 @@ def default_train_parser():
                         type=int,
                         help="Batch size per GPU/CPU for training.")
     parser.add_argument("--eval_batch_size", default=16, type=int)
-    parser.add_argument("--levels",default='false',type=boolean_string,help="If True, the model will be truly hierarchical.")
-
+ 
     # eval
     parser.add_argument("--encoder_ckpt", default=None, type=str)
     parser.add_argument("--model_ckpt", default=None, type=str)
@@ -177,6 +176,8 @@ def default_train_parser():
     parser.add_argument("--max_sent_num", default=40, type=int)
     parser.add_argument("--max_entity_num", default=60, type=int)
     parser.add_argument("--max_ans_ent_num", default=15, type=int)
+    parser.add_argument("--levels",default='false',type=boolean_string,help="If True, the model will be truly hierarchical.")
+
 
     # bi attn
     parser.add_argument('--ctx_attn', type=str, default='gate_att_up', choices=['no_gate', 'gate_att_or', 'gate_att_up'])
