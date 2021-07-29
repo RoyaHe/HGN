@@ -116,11 +116,18 @@ class GATSelfAttention(nn.Module):
         self.act = get_act('lrelu:0.2')
 
     def forward(self, input_state, adj, node_mask=None, query_vec=None):
-        zero_vec = torch.zeros_like(adj)
-        scores = torch.zeros_like(adj)
+    
+        h_i = input_state
+        levels = [[1,2,5],[4,3],[6,7],[8]]
 
-        for i in range(self.n_type):
-            h = torch.matmul(input_state, self.W_type[i])
+        for level in levels:
+          
+          zero_vec = -1e30 * torch.zeros_like(adj)
+          scores = torch.zeros_like(adj)
+          
+          for i in level:
+
+            h = torch.matmul(h_i, self.W_type[i])
             h = F.dropout(h, self.dropout, self.training)
             N, E, d = h.shape
 
@@ -128,26 +135,24 @@ class GATSelfAttention(nn.Module):
             a_input = a_input.view(-1, E, E, 2*d)
 
             if self.q_attn:
-                q_gate = F.relu(torch.matmul(query_vec, self.qattn_W1[i]))
-                q_gate = torch.sigmoid(torch.matmul(q_gate, self.qattn_W2[i]))
-                a_input = a_input * q_gate[:, None, None, :]
-                score = self.act(torch.matmul(a_input, self.a_type[i]).squeeze(3))
+              q_gate = F.relu(torch.matmul(query_vec, self.qattn_W1[i]))
+              q_gate = torch.sigmoid(torch.matmul(q_gate, self.qattn_W2[i]))
+              a_input = a_input * q_gate[:, None, None, :]
+              score = self.act(torch.matmul(a_input, self.a_type[i]).squeeze(3))
             else:
-                score = self.act(torch.matmul(a_input, self.a_type[i]).squeeze(3))
+              score = self.act(torch.matmul(a_input, self.a_type[i]).squeeze(3))
+            
+            scores += torch.where(adj == i, score, zero_vec.to(score.dtype))
 
-            scores += torch.where(adj == i+1, score, zero_vec.to(score.dtype))
-
-        zero_vec = -1e30 * torch.ones_like(scores)
-        scores = torch.where(adj > 0, scores, zero_vec.to(scores.dtype))
-
-        # Ahead Alloc
-        if node_mask is not None:
+          # Ahead Alloc
+          if node_mask is not None:
             h = h * node_mask
-
-        coefs = F.softmax(scores, dim=2)  # N * E * E
-        h = coefs.unsqueeze(3) * h.unsqueeze(2)  # N * E * E * d
-        h = torch.sum(h, dim=1)
-        return h
+            
+          coefs = F.softmax(scores, dim=2)  # N * E * E
+          h = coefs.unsqueeze(3) * h.unsqueeze(2)  # N * E * E * d
+          h_i = torch.sum(h, dim=1)
+        
+        return h_i
 
 
 class AttentionLayer(nn.Module):
