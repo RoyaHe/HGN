@@ -176,7 +176,7 @@ def default_train_parser():
     parser.add_argument("--max_sent_num", default=40, type=int)
     parser.add_argument("--max_entity_num", default=60, type=int)
     parser.add_argument("--max_ans_ent_num", default=15, type=int)
-    parser.add_argument("--levels",default='false',type=boolean_string,help="If True, the model will be truly hierarchical.")
+    parser.add_argument("--levels",default=False,type=boolean_string,help="If True, the model will be truly hierarchical.")
 
 
     # bi attn
