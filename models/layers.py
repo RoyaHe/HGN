@@ -147,17 +147,18 @@ class GATSelfAttention(nn.Module):
             
                     scores += torch.where(adj == i, score, zero_vec.to(score.dtype))
 
-               # Ahead Alloc
-               if node_mask is not None:
+                # Ahead Alloc
+                if node_mask is not None:
                     h = h * node_mask
             
-               coefs = F.softmax(scores, dim=2)  # N * E * E
-               h = coefs.unsqueeze(3) * h.unsqueeze(2)  # N * E * E * d
-               h_i = torch.sum(h, dim=1)
+                coefs = F.softmax(scores, dim=2)  # N * E * E
+                h = coefs.unsqueeze(3) * h.unsqueeze(2)  # N * E * E * d
+                h_i = torch.sum(h, dim=1)
                 
             return h_i
         
         else:
+            
             zero_vec = torch.zeros_like(adj)
             scores = torch.zeros_like(adj)
             
@@ -189,6 +190,7 @@ class GATSelfAttention(nn.Module):
             coefs = F.softmax(scores, dim=2)  # N * E * E
             h = coefs.unsqueeze(3) * h.unsqueeze(2)  # N * E * E * d
             h = torch.sum(h, dim=1)
+            
             return h
 
 
