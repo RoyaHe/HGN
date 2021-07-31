@@ -1,6 +1,6 @@
 {
     "output_dir": "/ssd/HGN/data/outputs/",
-    "exp_name": "roberta_FreezeBert_Type1",
+    "exp_name": "FreezeBert_Type1",
     "model_type": "roberta",
     "encoder_name_or_path": "roberta-large",
     "fp16": "True",
