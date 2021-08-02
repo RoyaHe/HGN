@@ -121,13 +121,13 @@ class GATSelfAttention(nn.Module):
         levels = [[1,2,5],[4,3],[6,7],[8]]
 
         for level in levels:
-          
+
           zero_vec = -1e30 * torch.zeros_like(adj)
           scores = torch.zeros_like(adj)
           
           for i in level:
 
-            h = torch.matmul(h_i, self.W_type[i])
+            h = torch.matmul(h_i, self.W_type[i-1])
             h = F.dropout(h, self.dropout, self.training)
             N, E, d = h.shape
 
@@ -135,12 +135,12 @@ class GATSelfAttention(nn.Module):
             a_input = a_input.view(-1, E, E, 2*d)
 
             if self.q_attn:
-              q_gate = F.relu(torch.matmul(query_vec, self.qattn_W1[i]))
-              q_gate = torch.sigmoid(torch.matmul(q_gate, self.qattn_W2[i]))
+              q_gate = F.relu(torch.matmul(query_vec, self.qattn_W1[i-1]))
+              q_gate = torch.sigmoid(torch.matmul(q_gate, self.qattn_W2[i-1]))
               a_input = a_input * q_gate[:, None, None, :]
-              score = self.act(torch.matmul(a_input, self.a_type[i]).squeeze(3))
+              score = self.act(torch.matmul(a_input, self.a_type[i-1]).squeeze(3))
             else:
-              score = self.act(torch.matmul(a_input, self.a_type[i]).squeeze(3))
+              score = self.act(torch.matmul(a_input, self.a_type[i-1]).squeeze(3))
             
             scores += torch.where(adj == i, score, zero_vec.to(score.dtype))
 
