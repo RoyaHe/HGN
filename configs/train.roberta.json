@@ -10,5 +10,6 @@
     "gnn_drop": 0.3,
     "bi_attn_drop": 0.3,
     "trans_drop": 0.2,
-    "fp16": "True"
+    "fp16": "True",
+    "gnn":"gat:1,1"
 }
