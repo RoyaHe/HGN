@@ -94,15 +94,6 @@ class GATSelfAttention(nn.Module):
         self.out_dim = out_dim
         self.dropout = self.config.gnn_drop
         self.q_attn = q_attn
-        self.query_diclass GATSelfAttention(nn.Module):
-    def __init__(self, in_dim, out_dim, config, q_attn=False, head_id=0):
-        """ One head GAT """
-        super(GATSelfAttention, self).__init__()
-        self.config = config
-        self.in_dim = in_dim
-        self.out_dim = out_dim
-        self.dropout = self.config.gnn_drop
-        self.q_attn = q_attn
         self.query_dim = in_dim
         self.n_type = self.config.num_edge_type
 
@@ -124,19 +115,14 @@ class GATSelfAttention(nn.Module):
 
         self.act = get_act('lrelu:0.2')
 
-    def forward(self, input_state, adj, node_mask=None, query_vec=None):
-    
-        h_i = input_state
-        levels = [[1,2,5],[4,3],[6,7],[8]]
-
-        for level in levels:
+    def forward(self, input_state, adj, node_mask=None, query_vec=None, level):
 
           zero_vec = -1e30 * torch.zeros_like(adj)
           scores = torch.zeros_like(adj)
           
           for i in level:
 
-            h = torch.matmul(h_i, self.W_type[i-1])
+            h = torch.matmul(input_state, self.W_type[i-1])
             h = F.dropout(h, self.dropout, self.training)
             N, E, d = h.shape
 
@@ -159,9 +145,9 @@ class GATSelfAttention(nn.Module):
             
           coefs = F.softmax(scores, dim=2)  # N * E * E
           h = coefs.unsqueeze(3) * h.unsqueeze(2)  # N * E * E * d
-          h_i = torch.sum(h, dim=1)
+          h = torch.sum(h, dim=1)
         
-        return h_i
+          return h
 
 
 class AttentionLayer(nn.Module):
@@ -182,15 +168,22 @@ class AttentionLayer(nn.Module):
             self.align_dim = lambda x: x
 
     def forward(self, input, adj, node_mask=None, query_vec=None):
-        hidden_list = []
-        for attn in self.attn_funcs:
-            h = attn(input, adj, node_mask=node_mask, query_vec=query_vec)
+
+        levels = [[1,2,5],[4,3],[6,7],[8]]
+        h_i = input
+
+        for level in levels:
+          
+          hidden_list = []
+          for attn in self.attn_funcs:
+            h = attn(h_i, adj, node_mask=node_mask, query_vec=query_vec,level=level)
             hidden_list.append(h)
 
-        h = torch.cat(hidden_list, dim=-1)
-        h = F.dropout(h, self.dropout, training=self.training)
-        h = F.relu(h)
-        return h
+          h = torch.cat(hidden_list, dim=-1)
+          h = F.dropout(h, self.dropout, training=self.training)
+          h_i = F.relu(h)
+
+        return h_i
 
 
 class BertLayerNorm(nn.Module):
