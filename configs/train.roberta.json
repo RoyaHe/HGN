@@ -1,5 +1,5 @@
 {
-    "exp_name": "roberta_FreezeBert_GraphReasoningUpdate",
+    "exp_name": "roberta_FreezeBert_GraphReasoningUpdate2",
     "model_type": "roberta",
     "encoder_name_or_path": "roberta-large",
     "num_train_epochs": 5,
@@ -10,6 +10,5 @@
     "gnn_drop": 0.3,
     "bi_attn_drop": 0.3,
     "trans_drop": 0.2,
-    "fp16": "True",
-    "gnn":"gat:1,1"
+    "fp16": "True"
 }
