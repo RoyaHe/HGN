@@ -115,7 +115,7 @@ class GATSelfAttention(nn.Module):
 
         self.act = get_act('lrelu:0.2')
 
-    def forward(self, input_state, adj, node_mask=None, query_vec=None, level):
+    def forward(self, input_state, adj, node_mask=None, query_vec=None, level=None):
 
           zero_vec = -1e30 * torch.zeros_like(adj)
           scores = torch.zeros_like(adj)
