@@ -94,6 +94,15 @@ class GATSelfAttention(nn.Module):
         self.out_dim = out_dim
         self.dropout = self.config.gnn_drop
         self.q_attn = q_attn
+        self.query_diclass GATSelfAttention(nn.Module):
+    def __init__(self, in_dim, out_dim, config, q_attn=False, head_id=0):
+        """ One head GAT """
+        super(GATSelfAttention, self).__init__()
+        self.config = config
+        self.in_dim = in_dim
+        self.out_dim = out_dim
+        self.dropout = self.config.gnn_drop
+        self.q_attn = q_attn
         self.query_dim = in_dim
         self.n_type = self.config.num_edge_type
 
