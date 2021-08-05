@@ -155,6 +155,7 @@ class AttentionLayer(nn.Module):
         super(AttentionLayer, self).__init__()
         assert hid_dim % n_head == 0
         self.dropout = config.gnn_drop
+        self.levels = config.levels
 
         self.attn_funcs = nn.ModuleList()
         for i in range(n_head):
@@ -169,7 +170,7 @@ class AttentionLayer(nn.Module):
 
     def forward(self, input, adj, node_mask=None, query_vec=None):
 
-        levels = [[1,2,5],[4,3],[6,7],[8]]
+        levels = self.levels
         h_i = input
 
         for level in levels:
