@@ -1,6 +1,6 @@
 {
     "output_dir": "/ssd/HGN/data/outputs/",
-    "exp_name": "FreezeBert_GraphReasoningUpdate",
+    "exp_name": "FreezeBert_Graph2EdgeType2",
     "model_type": "roberta",
     "encoder_name_or_path": "roberta-large",
     "fp16": "True",
