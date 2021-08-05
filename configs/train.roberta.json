@@ -12,5 +12,5 @@
     "trans_drop": 0.2,
     "fp16": "True",
     "num_edge_type":9,
-    "levels": "4,3 1,2,5 8 6,7"
+    "levels": "4,3,9 1,2,5 8 6,7"
 }
