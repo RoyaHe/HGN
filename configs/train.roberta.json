@@ -1,14 +1,15 @@
 {
-    "exp_name": "roberta_FreezeBert_GraphReasoningUpdate2",
+    "exp_name": "roberta_UpdateMethod3",
     "model_type": "roberta",
     "encoder_name_or_path": "roberta-large",
     "num_train_epochs": 5,
-    "per_gpu_train_batch_size": 8,
+    "per_gpu_train_batch_size": 16,
     "learning_rate": 1e-5,
     "gradient_accumulation_steps": 1,
     "gpu_id": "0",
     "gnn_drop": 0.3,
     "bi_attn_drop": 0.3,
     "trans_drop": 0.2,
-    "fp16": "True"
+    "fp16": "True",
+    "levels": "4,3 1,2,5 8 6,7"
 }
