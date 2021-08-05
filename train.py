@@ -51,6 +51,31 @@ dev_example_dict = helper.dev_example_dict
 dev_feature_dict = helper.dev_feature_dict
 dev_dataloader = helper.dev_loader
 
+##########################################################################
+# Add type II que_sent nodes into train_dataloader, dev_dataloader
+##########################################################################
+## There 105 nodes in the graph
+## - 1 question node
+## - 4 paragraph nodes
+## - 40 sentence nodes [10 for each paragraph]
+## - 60 entity nodes
+
+# edge_types = ['ques_para', 'ques_ent', 'para_para', 'para_sent', 'sent_para', 'sent_sent', 'sent_ent']
+# add 'ques_sent' edge, where sentences are such that containing the entity nodes connected with the question node
+for id in train_dataloader.graph_dict:
+
+  adj_id = train_dataloader.graph_dict[id]['adj']
+  train_dataloader.graph_dict[id]['adj'][0,:][5:45] = 9
+  train_dataloader.graph_dict[id]['adj'][:,0][5:45] = 9
+
+ 
+for id in dev_dataloader.graph_dict:
+
+  adj_id = dev_dataloader.graph_dict[id]['adj']
+  dev_dataloader.graph_dict[id]['adj'][0,:][5:45] = 9
+  dev_dataloader.graph_dict[id]['adj'][:,0][5:45] = 9
+
+
 #########################################################################
 # Initialize Model
 ##########################################################################
@@ -72,11 +97,7 @@ else:
     learning_rate = args.learning_rate
 
 # Set Encoder and Model
-encoder_base, _ = load_encoder_model(args.encoder_name_or_path, args.model_type)
-for param in encoder_base.parameters():
-    param.requires_grad = False # freeze layers in RoberTa
-
-encoder = nn.Sequential(nn.Linear(1024,2048),nn.ReLU(),nn.Linear(2048,1024))
+encoder, _ = load_encoder_model(args.encoder_name_or_path, args.model_type)
 model = HierarchicalGraphNetwork(config=args)
 
 if encoder_path is not None:
@@ -84,7 +105,6 @@ if encoder_path is not None:
 if model_path is not None:
     model.load_state_dict(torch.load(model_path))
 
-encoder_base.to(args.device)
 encoder.to(args.device)
 model.to(args.device)
 
@@ -164,7 +184,7 @@ for epoch in train_iterator:
                   'attention_mask': batch['context_mask'],
                   'token_type_ids': batch['segment_idxs'] if args.model_type in ['bert', 'xlnet'] else None}  # XLM don't use segment_ids
 
-        batch['context_encoding'] = encoder(encoder_base(**inputs)[0])
+        batch['context_encoding'] = encoder(**inputs)[0]
         batch['context_mask'] = batch['context_mask'].float().to(args.device)
         start, end, q_type, paras, sents, ents, _, _ = model(batch, return_yp=True)
 
@@ -217,7 +237,7 @@ for epoch in train_iterator:
     if args.local_rank == -1 or torch.distributed.get_rank() == 0:
         output_pred_file = os.path.join(args.exp_name, f'pred.epoch_{epoch+1}.json')
         output_eval_file = os.path.join(args.exp_name, f'eval.epoch_{epoch+1}.txt')
-        metrics, threshold = eval_model(args, encoder, encoder_base, model,
+        metrics, threshold = eval_model(args, encoder, model,
                                         dev_dataloader, dev_example_dict, dev_feature_dict,
                                         output_pred_file, output_eval_file, args.dev_gold_file)
 
