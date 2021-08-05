@@ -1,5 +1,5 @@
 {
-    "exp_name": "roberta_Graph2EdgeType2",
+    "exp_name": "roberta_FreezeGraph2EdgeType2",
     "model_type": "roberta",
     "encoder_name_or_path": "roberta-large",
     "num_train_epochs": 5,
