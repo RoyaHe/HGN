@@ -15,6 +15,12 @@ from model_envs import ALL_MODELS, MODEL_CLASSES
 
 logger = logging.getLogger(__name__)
 
+def to_list(arg):
+    levels = arg.split(" ")
+    output = []
+    for level in levels:
+      output.append([int(i) for i in level.split(",")])
+    return output
 
 def boolean_string(s):
     if s.lower() not in {'false', 'true'}:
@@ -176,6 +182,7 @@ def default_train_parser():
     parser.add_argument("--max_sent_num", default=40, type=int)
     parser.add_argument("--max_entity_num", default=60, type=int)
     parser.add_argument("--max_ans_ent_num", default=15, type=int)
+    parser.add_argument('--levels',type=to_list,default=[[1,2,5],[6,7],[4,3],[8]])    
 
     # bi attn
     parser.add_argument('--ctx_attn', type=str, default='gate_att_up', choices=['no_gate', 'gate_att_or', 'gate_att_up'])
