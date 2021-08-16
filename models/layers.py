@@ -120,6 +120,21 @@ class GATSelfAttention(nn.Module):
           zero_vec = -1e30 * torch.zeros_like(adj)
           scores = torch.zeros_like(adj)
           
+          scores_mask = torch.zeros_like(adj)
+          N,E,E = scores_mask.shape
+          
+          ## paragraph level updates
+          if level == [1,2,4,5]:
+            scores_mask[:,0:4,:] = torch.ones(N,4,E)
+          
+          ## sentence level updates
+          elif level == [3,4,5,7]:
+            scores_mask[:,4:45,:] = torch.ones(N,40,E)
+          
+          ## entity level updates
+          elif level == [6,7]:
+            scores_mask[:,45:,:] = torch.ones(N,60,E)
+
           for i in level:
 
             h = torch.matmul(input_state, self.W_type[i-1])
@@ -142,7 +157,11 @@ class GATSelfAttention(nn.Module):
           # Ahead Alloc
           if node_mask is not None:
             h = h * node_mask
-            
+          
+          # scores_mask
+          if scores_mask is not None:
+            scores = scores * scores_mask 
+
           coefs = F.softmax(scores, dim=2)  # N * E * E
           h = coefs.unsqueeze(3) * h.unsqueeze(2)  # N * E * E * d
           h = torch.sum(h, dim=1)
@@ -174,7 +193,7 @@ class AttentionLayer(nn.Module):
         h_i = input
 
         for level in levels:
-          
+
           hidden_list = []
           for attn in self.attn_funcs:
             h = attn(h_i, adj, node_mask=node_mask, query_vec=query_vec,level=level)
