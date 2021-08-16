@@ -11,5 +11,5 @@
     "bi_attn_drop": 0.3,
     "trans_drop": 0.2,
     "fp16": "True",
-    "levels": "4,3 1,2,5 8 6,7"
+    "levels": "1,2,4,5 3,4,5,7 6,7"
 }
