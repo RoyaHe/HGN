@@ -125,11 +125,11 @@ class GATSelfAttention(nn.Module):
           
           ## paragraph level updates
           if level == [1,2,4,5]:
-            scores_mask[:,0:4,:] = torch.ones(N,4,E)
+            scores_mask[:,1:5,:] = torch.ones(N,4,E)
           
           ## sentence level updates
           elif level == [3,4,5,7]:
-            scores_mask[:,4:45,:] = torch.ones(N,40,E)
+            scores_mask[:,5:45,:] = torch.ones(N,40,E)
           
           ## entity level updates
           elif level == [6,7]:
@@ -162,8 +162,22 @@ class GATSelfAttention(nn.Module):
           if scores_mask is not None:
             scores = scores * scores_mask 
 
-          coefs = F.softmax(scores, dim=2)  # N * E * E
-          h = coefs.unsqueeze(3) * h.unsqueeze(2)  # N * E * E * d
+          ## paragraph level updates
+          if level == [1,2,4,5]:
+            coefs = torch.zeros(N,E,E)
+            coefs[:,1:5,:] = F.softmax(scores[:,1:5,:], dim=2)
+
+          ## sentence level updates
+          elif level == [3,4,5,7]:
+            coefs = torch.zeros(N,E,E)
+            coefs[:,5:45,:] = F.softmax(scores[:,5:45,:], dim=2)
+          
+          ## entity level updates
+          elif level == [6,7]:
+            coefs = torch.zeros(N,E,E)
+            coefs[:,45:,:] = F.softmax(scores[:,45:,:], dim=2)
+
+          h = coefs.unsqueeze(3).cuda() * h.unsqueeze(2).cuda()  # N * E * E * d
           h = torch.sum(h, dim=1)
         
           return h
