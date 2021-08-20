@@ -11,5 +11,7 @@
     "bi_attn_drop": 0.3,
     "trans_drop": 0.2,
     "fp16": "True",
-    "levels": "1,2,4,5 3,4,5,7 6,7"
+    "levels": "1,2,4,5 3,4,5,7 6,7",
+    "sp_threshold": 0.8,
+    "sent_lambda": 3
 }
