@@ -163,17 +163,17 @@ class GATSelfAttention(nn.Module):
             scores = scores * scores_mask 
 
           ## paragraph level updates
-          if level == [1,2,4,5]:
+          if level == [1,2,4,5,8]:
             coefs = torch.zeros(N,E,E)
             coefs[:,1:5,:] = F.softmax(scores[:,1:5,:], dim=2)
 
           ## sentence level updates
-          elif level == [3,4,5,7]:
+          elif level == [3,4,5,7,8]:
             coefs = torch.zeros(N,E,E)
             coefs[:,5:45,:] = F.softmax(scores[:,5:45,:], dim=2)
           
           ## entity level updates
-          elif level == [6,7]:
+          elif level == [6,7,8]:
             coefs = torch.zeros(N,E,E)
             coefs[:,45:,:] = F.softmax(scores[:,45:,:], dim=2)
 
