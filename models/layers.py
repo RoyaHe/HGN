@@ -124,15 +124,15 @@ class GATSelfAttention(nn.Module):
           N,E,E = scores_mask.shape
           
           ## paragraph level updates
-          if level == [1,2,4,5]:
+          if level == [1,2,4,5,8]:
             scores_mask[:,1:5,:] = torch.ones(N,4,E)
           
           ## sentence level updates
-          elif level == [3,4,5,7]:
+          elif level == [3,4,5,7,8]:
             scores_mask[:,5:45,:] = torch.ones(N,40,E)
           
           ## entity level updates
-          elif level == [6,7]:
+          elif level == [6,7,8]:
             scores_mask[:,45:,:] = torch.ones(N,60,E)
 
           for i in level:
