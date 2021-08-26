@@ -119,22 +119,8 @@ class GATSelfAttention(nn.Module):
 
           zero_vec = -1e30 * torch.zeros_like(adj)
           scores = torch.zeros_like(adj)
+          h_output = input_state
           
-          scores_mask = torch.zeros_like(adj)
-          N,E,E = scores_mask.shape
-          
-          ## paragraph level updates
-          if level == [1,2,4,5,8]:
-            scores_mask[:,1:5,:] = torch.ones(N,4,E)
-          
-          ## sentence level updates
-          elif level == [3,4,5,7,8]:
-            scores_mask[:,5:45,:] = torch.ones(N,40,E)
-          
-          ## entity level updates
-          elif level == [6,7,8]:
-            scores_mask[:,45:,:] = torch.ones(N,60,E)
-
           for i in level:
 
             h = torch.matmul(input_state, self.W_type[i-1])
@@ -158,25 +144,7 @@ class GATSelfAttention(nn.Module):
           if node_mask is not None:
             h = h * node_mask
           
-          # scores_mask
-          if scores_mask is not None:
-            scores = scores * scores_mask 
-
-          ## paragraph level updates
-          if level == [1,2,4,5,8]:
-            coefs = torch.zeros(N,E,E)
-            coefs[:,1:5,:] = F.softmax(scores[:,1:5,:], dim=2)
-
-          ## sentence level updates
-          elif level == [3,4,5,7,8]:
-            coefs = torch.zeros(N,E,E)
-            coefs[:,5:45,:] = F.softmax(scores[:,5:45,:], dim=2)
-          
-          ## entity level updates
-          elif level == [6,7,8]:
-            coefs = torch.zeros(N,E,E)
-            coefs[:,45:,:] = F.softmax(scores[:,45:,:], dim=2)
-
+          coefs = F.softmax(scores, dim=2)  # N * E * E
           h = coefs.unsqueeze(3).cuda() * h.unsqueeze(2).cuda()  # N * E * E * d
           h = torch.sum(h, dim=1)
         
@@ -215,7 +183,34 @@ class AttentionLayer(nn.Module):
 
           h = torch.cat(hidden_list, dim=-1)
           h = F.dropout(h, self.dropout, training=self.training)
-          h_i = F.relu(h)
+          h = F.relu(h)
+
+          N,E,d = h.shape
+          ## paragraph level updates
+          if level == [1,2,4,5,8]:
+            mask_0 = torch.zeros_like(h)
+            mask_0[:,1:5,:] = torch.ones(N,4,d)
+            mask_1 = torch.ones_like(h) - mask_0
+
+            h_i = h*mask_0 + h_i*mask_1
+          
+          ## sentence level updates
+          elif level == [3,4,5,7,8]:
+            #h_output[:,5:45,:] = h[:,5:45,:]
+            mask_0 = torch.zeros_like(h)
+            mask_0[:,5:45,:] = torch.ones(N,40,d)
+            mask_1 = torch.ones_like(h) - mask_0
+
+            h_i = h*mask_0 + h_i*mask_1
+          
+          ## entity level updates
+          elif level == [6,7,8]:
+            #h_output[:,45:,:] = h[:,45:,:]
+            mask_0 = torch.zeros_like(h)
+            mask_0[:,45:,:] = torch.ones(N,60,d)
+            mask_1 = torch.ones_like(h) - mask_0
+
+            h_i = h*mask_0 + h_i*mask_1
 
         return h_i
 
