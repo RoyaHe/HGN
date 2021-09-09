@@ -12,5 +12,7 @@
     "trans_drop": 0.2,
     "fp16": "True",
     "num_edge_type":9,
-    "levels": "4,3,9 1,2,5 8 6,7"
+    "levels": "1,2,4,5,8 3,4,5,7,8 6,7,8",
+    "sp_threshold": 0.8,
+    "sent_lambda": 3
 }
