@@ -119,6 +119,7 @@ class GATSelfAttention(nn.Module):
 
           zero_vec = -1e30 * torch.zeros_like(adj)
           scores = torch.zeros_like(adj)
+          h_output = input_state
           
           for i in level:
 
@@ -142,9 +143,9 @@ class GATSelfAttention(nn.Module):
           # Ahead Alloc
           if node_mask is not None:
             h = h * node_mask
-            
+          
           coefs = F.softmax(scores, dim=2)  # N * E * E
-          h = coefs.unsqueeze(3) * h.unsqueeze(2)  # N * E * E * d
+          h = coefs.unsqueeze(3).cuda() * h.unsqueeze(2).cuda()  # N * E * E * d
           h = torch.sum(h, dim=1)
         
           return h
@@ -174,7 +175,7 @@ class AttentionLayer(nn.Module):
         h_i = input
 
         for level in levels:
-          
+
           hidden_list = []
           for attn in self.attn_funcs:
             h = attn(h_i, adj, node_mask=node_mask, query_vec=query_vec,level=level)
@@ -182,7 +183,34 @@ class AttentionLayer(nn.Module):
 
           h = torch.cat(hidden_list, dim=-1)
           h = F.dropout(h, self.dropout, training=self.training)
-          h_i = F.relu(h)
+          h = F.relu(h)
+
+          N,E,d = h.shape
+          ## paragraph level updates
+          if level == [1,2,4,5,8]:
+            mask_0 = torch.zeros_like(h)
+            mask_0[:,1:5,:] = torch.ones(N,4,d)
+            mask_1 = torch.ones_like(h) - mask_0
+
+            h_i = h*mask_0 + h_i*mask_1
+          
+          ## sentence level updates
+          elif level == [3,4,5,7,8]:
+            #h_output[:,5:45,:] = h[:,5:45,:]
+            mask_0 = torch.zeros_like(h)
+            mask_0[:,5:45,:] = torch.ones(N,40,d)
+            mask_1 = torch.ones_like(h) - mask_0
+
+            h_i = h*mask_0 + h_i*mask_1
+          
+          ## entity level updates
+          elif level == [6,7,8]:
+            #h_output[:,45:,:] = h[:,45:,:]
+            mask_0 = torch.zeros_like(h)
+            mask_0[:,45:,:] = torch.ones(N,60,d)
+            mask_1 = torch.ones_like(h) - mask_0
+
+            h_i = h*mask_0 + h_i*mask_1
 
         return h_i
 
