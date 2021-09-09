@@ -195,7 +195,7 @@ class AttentionLayer(nn.Module):
             h_i = h*mask_0 + h_i*mask_1
           
           ## sentence level updates
-          elif level == [3,4,5,7,8]:
+          elif level == [3,4,5,7,8,9]:
             #h_output[:,5:45,:] = h[:,5:45,:]
             mask_0 = torch.zeros_like(h)
             mask_0[:,5:45,:] = torch.ones(N,40,d)
