@@ -72,11 +72,7 @@ else:
     learning_rate = args.learning_rate
 
 # Set Encoder and Model
-encoder_base, _ = load_encoder_model(args.encoder_name_or_path, args.model_type)
-for param in encoder_base.parameters():
-    param.requires_grad = False # freeze layers in RoberTa
-
-encoder = nn.Sequential(nn.Linear(1024,2048),nn.ReLU(),nn.Linear(2048,1024))
+encoder, _ = load_encoder_model(args.encoder_name_or_path, args.model_type)
 model = HierarchicalGraphNetwork(config=args)
 
 if encoder_path is not None:
@@ -84,7 +80,6 @@ if encoder_path is not None:
 if model_path is not None:
     model.load_state_dict(torch.load(model_path))
 
-encoder_base.to(args.device)
 encoder.to(args.device)
 model.to(args.device)
 
@@ -164,7 +159,7 @@ for epoch in train_iterator:
                   'attention_mask': batch['context_mask'],
                   'token_type_ids': batch['segment_idxs'] if args.model_type in ['bert', 'xlnet'] else None}  # XLM don't use segment_ids
 
-        batch['context_encoding'] = encoder(encoder_base(**inputs)[0])
+        batch['context_encoding'] = encoder(**inputs)[0]
         batch['context_mask'] = batch['context_mask'].float().to(args.device)
         start, end, q_type, paras, sents, ents, _, _ = model(batch, return_yp=True)
 
@@ -217,7 +212,7 @@ for epoch in train_iterator:
     if args.local_rank == -1 or torch.distributed.get_rank() == 0:
         output_pred_file = os.path.join(args.exp_name, f'pred.epoch_{epoch+1}.json')
         output_eval_file = os.path.join(args.exp_name, f'eval.epoch_{epoch+1}.txt')
-        metrics, threshold = eval_model(args, encoder, encoder_base, model,
+        metrics, threshold = eval_model(args, encoder, model,
                                         dev_dataloader, dev_example_dict, dev_feature_dict,
                                         output_pred_file, output_eval_file, args.dev_gold_file)
 
