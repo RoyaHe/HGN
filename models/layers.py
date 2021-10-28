@@ -186,6 +186,15 @@ class AttentionLayer(nn.Module):
           h = F.relu(h)
 
           N,E,d = h.shape
+            
+          ## query level updates
+          if level == [1,6,8]:
+            mask_0 = torch.zeros_like(h)
+            mask_0[:,0,:] = torch.ones(N,1,d)
+            mask_1 = torch.ones_like(h) - mask_0
+
+            h_i = h*mask_0 + h_i*mask_1
+            
           ## paragraph level updates
           if level == [1,2,4,5,8]:
             mask_0 = torch.zeros_like(h)
