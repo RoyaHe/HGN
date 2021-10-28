@@ -196,7 +196,7 @@ class AttentionLayer(nn.Module):
             h_i = h*mask_0 + h_i*mask_1
             
           ## paragraph level updates
-          if level == [1,2,4,5,8]:
+          elif level == [1,2,4,5,8]:
             mask_0 = torch.zeros_like(h)
             mask_0[:,1:5,:] = torch.ones(N,4,d)
             mask_1 = torch.ones_like(h) - mask_0
