@@ -11,7 +11,7 @@
     "bi_attn_drop": 0.3,
     "trans_drop": 0.2,
     "fp16": "True",
-    "levels": "1,2,4,5,8 3,4,5,7,8 6,7,8",
+    "levels": "1,2,4,5,8 3,4,5,7,8 6,7,8", # if query_update == True, ''levels'' = "1,2,4,5,8 3,4,5,7,8 6,7,8 1,6,8"
     "sp_threshold": 0.8,
     "sent_lambda": 3
 }
