@@ -190,7 +190,7 @@ class AttentionLayer(nn.Module):
           ## query level updates
           if level == [1,6,8]:
             mask_0 = torch.zeros_like(h)
-            mask_0[:,0,:] = torch.ones(N,1,d)
+            mask_0[:,0,:] = torch.ones(N,d)
             mask_1 = torch.ones_like(h) - mask_0
 
             h_i = h*mask_0 + h_i*mask_1
